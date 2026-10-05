@@ -1,0 +1,42 @@
+@startuml sequence
+actor Employee
+participant "API Controller" as API
+participant "TicketService" as Service
+participant "NLPService" as NLP
+participant "TicketRepository" as Repo
+database "SQLite DB" as DB
+
+Employee -> API: POST /tickets (title, desc)
+activate API
+
+API -> Service: create_ticket(data)
+activate Service
+
+Service -> NLP: generate_embedding(title + desc)
+activate NLP
+NLP --> Service: embedding_vector (float[])
+deactivate NLP
+
+Service -> Repo: create(ticket_data, embedding_vector)
+activate Repo
+Repo -> DB: INSERT INTO tickets
+DB --> Repo: success
+Repo --> Service: saved_ticket
+deactivate Repo
+
+Service -> Repo: get_closed_embeddings(category)
+activate Repo
+Repo --> Service: past_tickets_data
+deactivate Repo
+
+Service -> NLP: calculate_cosine_similarity()
+activate NLP
+NLP --> Service: top_3_similar_tickets
+deactivate NLP
+
+Service --> API: ticket_created_response + suggestions
+deactivate Service
+
+API --> Employee: 201 Created (JSON)
+deactivate API
+@enduml

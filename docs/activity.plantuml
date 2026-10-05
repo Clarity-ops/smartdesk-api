@@ -1,0 +1,20 @@
+@startuml activity
+start
+:Інженер запитує список відкритих тікетів;
+:Витягування тікетів з БД;
+while (Є необроблені тікети?) is (Так)
+  if (Це VIP-користувач?) then (Так)
+    :Використати PremiumUrgencyStrategy;
+    :Штраф за час = (Час / SLA) ^ 3;
+  else (Ні)
+    :Використати StandardUrgencyStrategy;
+    :Штраф за час = (Час / SLA) ^ 2;
+  endif
+  :Обчислити базову вагу (Role + Priority);
+  :Urgency = Базова вага + Штраф за час;
+  :Зберегти Urgency в пам'яті;
+endwhile (Ні)
+:Відсортувати масив тікетів за спаданням Urgency;
+:Повернути відсортований JSON;
+stop
+@enduml
