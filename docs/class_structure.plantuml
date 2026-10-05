@@ -1,0 +1,58 @@
+@startuml class_structure
+skinparam classAttributeIconSize 0
+
+class Ticket {
+  +id: int
+  +title: string
+  +description: string
+  +status: string
+  +priority: int
+  +embedding: float[]
+  +created_at: datetime
+}
+
+interface ITicketRepository {
+  +create(ticket: Ticket): Ticket
+  +get_all_open(): List<Ticket>
+  +update_status(id: int, status: string): Ticket
+  +get_closed_embeddings(): List<Tuple>
+}
+
+class TicketRepository {
+  -db_session: Session
+  +create(...)
+  +get_all_open(...)
+}
+
+interface UrgencyStrategy {
+  +calculate(priority: int, elapsed_hours: float, sla_limit: int): float
+}
+
+class StandardUrgencyStrategy {
+  +calculate(...)
+}
+
+class PremiumUrgencyStrategy {
+  +calculate(...)
+}
+
+class TicketService {
+  -repo: ITicketRepository
+  -nlp_service: NLPService
+  +create_ticket(...)
+  +get_smart_queue(): List<Ticket>
+}
+
+class NLPService {
+  +generate_embedding(text: string): float[]
+  +calculate_cosine_similarity(vec1, vec2): float
+}
+
+ITicketRepository <|.. TicketRepository
+UrgencyStrategy <|.. StandardUrgencyStrategy
+UrgencyStrategy <|.. PremiumUrgencyStrategy
+
+TicketService o-- ITicketRepository
+TicketService o-- NLPService
+TicketService --> UrgencyStrategy : uses
+@enduml

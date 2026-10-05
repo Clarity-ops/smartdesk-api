@@ -1,0 +1,30 @@
+@startuml use_case
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Співробітник" as Employee
+actor "Інженер техпідтримки" as Engineer
+
+rectangle "SmartDesk System" {
+  usecase "Створити тікет" as UC1
+  usecase "Переглянути статус тікета" as UC2
+  usecase "Отримати рекомендації схожих тікетів" as UC3
+  
+  usecase "Переглянути смарт-чергу (Urgency)" as UC4
+  usecase "Змінити статус тікета" as UC5
+  usecase "Додати резолюцію" as UC6
+  
+  usecase "Розрахувати динамічний пріоритет" as UC7
+  usecase "Згенерувати вектор (Embeddings)" as UC8
+}
+
+Employee --> UC1
+Employee --> UC2
+UC1 ..> UC3 : <<include>>
+UC1 ..> UC8 : <<include>>
+
+Engineer --> UC4
+Engineer --> UC5
+Engineer --> UC6
+UC4 ..> UC7 : <<include>>
+@enduml
