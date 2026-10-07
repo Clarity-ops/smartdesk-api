@@ -107,6 +107,12 @@ class FakeTicketRepository(ITicketRepository):
 
     def update_status(self, ticket_id: int, status: str):
         return None
+    
+    def delete(self, ticket_id: int) -> bool:
+      return True 
+    
+    def update(self, ticket: Ticket) -> Ticket:
+        return ticket
 
 
 def test_ticket_service_smart_queue_sorting():

@@ -21,6 +21,14 @@ class ITicketRepository(ABC):
     @abstractmethod
     def update_status(self, ticket_id: int, status: str) -> Optional[Ticket]:
         pass
+      
+    @abstractmethod
+    def delete(self, ticket_id: int) -> bool:
+      pass
+    
+    @abstractmethod
+    def update(self, ticket: Ticket) -> Ticket:
+        pass
 
 class TicketRepository(ITicketRepository):
     """Конкретна реалізація для SQLAlchemy (SQLite)"""
@@ -53,3 +61,16 @@ class TicketRepository(ITicketRepository):
             self.db.commit()
             self.db.refresh(ticket)
         return ticket
+      
+    def delete(self, ticket_id: int) -> bool:
+      ticket = self.db.query(Ticket).filter(Ticket.id == ticket_id).first()
+      if ticket:
+          self.db.delete(ticket)
+          self.db.commit()
+          return True
+      return False
+    
+    def update(self, ticket: Ticket) -> Ticket:
+      self.db.commit()
+      self.db.refresh(ticket)
+      return ticket

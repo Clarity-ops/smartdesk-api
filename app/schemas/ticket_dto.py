@@ -29,3 +29,10 @@ class SimilarTicketDTO(BaseModel):
     title: str
     description: str
     similarity: float
+    
+class TicketUpdateDTO(BaseModel):
+    title: Optional[str] = Field(None, min_length=5, max_length=100, examples=["Updated: Broken monitor power supply"])
+    description: Optional[str] = Field(None, min_length=10, examples=["Updated: Monitor screen does not turn on and smells like smoke"])
+    category: Optional[str] = Field(None, examples=["Hardware"])
+    priority: Optional[int] = Field(None, ge=1, le=4, examples=[3])
+    sla_hours: Optional[int] = Field(None, ge=1, examples=[24])

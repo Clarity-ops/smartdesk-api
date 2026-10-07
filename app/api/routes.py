@@ -11,6 +11,7 @@ from app.schemas.ticket_dto import (
     TicketResponseDTO,
     TicketStatusUpdateDTO,
     SimilarTicketDTO,
+    TicketUpdateDTO
 )
 
 router = APIRouter(prefix="/tickets", tags=["Tickets"])
@@ -82,3 +83,32 @@ def get_similar_tickets(
     """Шукає топ-3 схожих закритих тікетів у тій самій категорії за допомогою семантичних векторів."""
     similar = service.find_similar_resolved(ticket_id=ticket_id, threshold=threshold)
     return similar
+  
+@router.delete("/{ticket_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_ticket(
+    ticket_id: int,
+    db: Session = Depends(get_db),
+):
+    repo = TicketRepository(db)
+    deleted = repo.delete(ticket_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Тікет із вказаним ID не знайдено")
+      
+@router.put("/{ticket_id}", response_model=TicketResponseDTO)
+def update_ticket_details(
+    ticket_id: int,
+    dto: TicketUpdateDTO,
+    service: TicketService = Depends(get_ticket_service),
+):
+    """Повне/часткове редагування тікета з автоматичним перерахунком ембеддингу."""
+    updated = service.update_ticket(
+        ticket_id=ticket_id,
+        title=dto.title,
+        description=dto.description,
+        category=dto.category,
+        priority=dto.priority,
+        sla_hours=dto.sla_hours,
+    )
+    if not updated:
+        raise HTTPException(status_code=404, detail="Тікет із вказаним ID не знайдено або він уже закритий")
+    return updated

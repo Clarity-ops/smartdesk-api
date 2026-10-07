@@ -78,3 +78,39 @@ class TicketService:
 
         scored.sort(key=lambda x: x["similarity"], reverse=True)
         return scored[:3]
+    
+    def update_ticket(
+        self,
+        ticket_id: int,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        category: Optional[str] = None,
+        priority: Optional[int] = None,
+        sla_hours: Optional[int] = None,
+    ) -> Optional[Ticket]:
+        # Знаходимо потрібний тікет серед відкритих (або через окремий get_by_id)
+        tickets = [t for t in self.repo.get_all_open() if t.id == ticket_id]
+        if not tickets:
+            return None
+
+        ticket = tickets[0]
+        text_changed = False
+
+        if title is not None:
+            ticket.title = title
+            text_changed = True
+        if description is not None:
+            ticket.description = description
+            text_changed = True
+        if category is not None:
+            ticket.category = category
+        if priority is not None:
+            ticket.priority = priority
+        if sla_hours is not None:
+            ticket.sla_hours = sla_hours
+
+        # Інтелектуальний re-indexing: оновлюємо ембеддинг, якщо змінився текст
+        if text_changed and self.nlp:
+            ticket.embedding = self.nlp.generate_embedding(f"{ticket.title} {ticket.description}")
+
+        return self.repo.update(ticket)
