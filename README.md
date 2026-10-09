@@ -6,6 +6,27 @@ SmartDesk is an IT Service Management system for managing technical support tick
 
 The project addresses ticket queue optimization and intelligent retrieval of ready-made solutions from historical data. It follows an API-first architecture with no separate frontend and provides interactive documentation through Swagger UI.
 
+## 📋 Project Requirements
+
+All system analysis artifacts and requirement specifications mandated by the course are located in the [`/requirements`](./requirements) directory:
+
+- 📄 **SRS (Software Requirements Specification v1.0):** [`/requirements/SRS_v1.md`](./requirements/SRS_v1.md)
+- 📊 **Product Backlog & User Stories:** [`/requirements/BACKLOG.md`](./requirements/BACKLOG.md)
+- 📐 **Use Case Diagram:** [`/requirements/use_case_diagram.png`](./requirements/use_case_diagram.png)
+
+### Brief Overview of SmartDesk System Requirements:
+
+- **Functional Requirements (FR):**
+- Full CRUD operations for IT incidents (`POST`, `GET`, `PUT`, `PATCH`, `DELETE`).
+- Generation of 384-dimensional vector embeddings using the `all-MiniLM-L6-v2` transformer NLP model.
+- Dynamic smart queue (Dynamic Urgency) featuring polymorphic mathematical penalties for SLA violations (Strategy pattern).
+- Intelligent semantic search for the top 3 similar items in the knowledge base using Cosine Similarity.
+- **Non-Functional Requirements (NFR):**
+- Request processing latency < 300 ms for 500+ incidents.
+- Data persistence in SQLite3 with ACID transaction support and vector serialization to JSON.
+- Three-tier Clean Architecture (Routers -> Services -> Repositories) adhering to SOLID, DRY, and KISS principles.
+- Input data validation via Pydantic DTOs (HTTP 422 / HTTP 404). - 100% successful completion of 7 automated tests in `pytest`.
+
 ## Academic Requirements
 
 - **Domain:** Technical support and IT infrastructure incident management.
